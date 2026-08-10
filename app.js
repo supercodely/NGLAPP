@@ -1,4 +1,4 @@
-// NTM.jsx
+// App.jsx
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   Plus,
@@ -6,18 +6,18 @@ import {
   Pencil,
   Lock,
   Globe2,
-  ListChecks,
+  ListChecks as ListChecks2,
   MessageSquare,
-  History,
+  History as History2,
   ChevronDown,
   ChevronUp,
   Send,
   Circle,
   CircleDot,
   CheckCircle2,
-  CalendarDays,
-  Users,
-  AlertTriangle,
+  CalendarDays as CalendarDays2,
+  Users as Users2,
+  AlertTriangle as AlertTriangle2,
   UserPlus,
   Bell,
   ShieldCheck,
@@ -28,22 +28,24 @@ import {
   Check,
   Languages,
   Play,
-  Flame,
-  Fan,
-  Droplets,
-  Gauge,
+  Flame as Flame2,
+  Fan as Fan2,
+  Droplets as Droplets2,
+  Gauge as Gauge2,
   ArrowLeftRight,
   List,
   Repeat,
   Clock,
   Search,
   Menu,
-  BookOpen,
-  Activity,
-  FileText,
+  BookOpen as BookOpen2,
+  Activity as Activity2,
+  FileText as FileText2,
   Download
 } from "lucide-react";
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+
+// constants.js
+import { Flame, Fan, Droplets, Gauge, ListChecks, AlertTriangle, FileText, CalendarDays, BookOpen, Activity, Users, History } from "lucide-react";
 var DEPT_ICONS = { "Outside": Flame, "Turbine": Fan, "Utilities": Droplets, "Control Panel": Gauge };
 var OPERATOR_ROLES = ["Panel Operator", "Outside Operator", "Turbine Operator", "Utility Operator"];
 var SUPERVISOR_ROLES = ["Coordinator", "Section Supervisor", "Unit Supervisor", "Shift Supervisor"];
@@ -92,19 +94,12 @@ var REVIEW_STATUS_META = {
   returned_to_operator: { ar: "\u0623\u064F\u0639\u064A\u062F \u0644\u0644\u0645\u0634\u063A\u0644 \u0644\u0644\u062A\u0635\u062D\u064A\u062D", en: "Returned to operator for correction", color: "#C0392B", bg: "#FBE7E4" },
   approved_final: { ar: "\u0645\u0639\u062A\u0645\u062F \u0646\u0647\u0627\u0626\u064A\u064B\u0627", en: "Fully approved", color: "#2F7D4F", bg: "#E4F3EA" }
 };
-function isShiftTurn(status) {
-  return status === "submitted" || status === "returned_to_shift";
-}
-function isSectionTurn(status) {
-  return status === "approved_by_shift";
-}
-function sectionCanSee(status) {
-  return status === "approved_by_shift" || status === "approved_final";
-}
 var WEEKDAYS_AR = ["\u0627\u0644\u0633\u0628\u062A", "\u0627\u0644\u0623\u062D\u062F", "\u0627\u0644\u0627\u062B\u0646\u064A\u0646", "\u0627\u0644\u062B\u0644\u0627\u062B\u0627\u0621", "\u0627\u0644\u0623\u0631\u0628\u0639\u0627\u0621", "\u0627\u0644\u062E\u0645\u064A\u0633", "\u0627\u0644\u062C\u0645\u0639\u0629"];
 var WEEKDAYS_EN = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
 var MONTHS_AR = ["\u064A\u0646\u0627\u064A\u0631", "\u0641\u0628\u0631\u0627\u064A\u0631", "\u0645\u0627\u0631\u0633", "\u0623\u0628\u0631\u064A\u0644", "\u0645\u0627\u064A\u0648", "\u064A\u0648\u0646\u064A\u0648", "\u064A\u0648\u0644\u064A\u0648", "\u0623\u063A\u0633\u0637\u0633", "\u0633\u0628\u062A\u0645\u0628\u0631", "\u0623\u0643\u062A\u0648\u0628\u0631", "\u0646\u0648\u0641\u0645\u0628\u0631", "\u062F\u064A\u0633\u0645\u0628\u0631"];
 var MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+// translations.js
 var STR = {
   previewAs: { ar: "\u0645\u0639\u0627\u064A\u0646\u0629 \u0643\u062D\u0633\u0627\u0628:", en: "Preview as:" },
   tasks: { ar: "\u0627\u0644\u0645\u0647\u0627\u0645", en: "Tasks" },
@@ -199,6 +194,19 @@ var STR = {
   logbookDraftBadge: { ar: "\u0645\u0633\u0648\u062F\u0629", en: "Draft" },
   logbookApprovedBadge: { ar: "\u0645\u0639\u062A\u0645\u062F", en: "Approved" },
   saveDraftBtn: { ar: "\u062D\u0641\u0638 \u0643\u0645\u0633\u0648\u062F\u0629", en: "Save Draft" },
+  toastTaskDeleted: { ar: "\u062A\u0645 \u062D\u0630\u0641 \u0627\u0644\u0645\u0647\u0645\u0629", en: "Task deleted" },
+  toastTaskCompleted: { ar: "\u0623\u064F\u0646\u062C\u0632\u062A \u0627\u0644\u0645\u0647\u0645\u0629 \u0628\u0646\u062C\u0627\u062D", en: "Task completed" },
+  toastTaskPostponed: { ar: "\u062A\u0645 \u062A\u0623\u062C\u064A\u0644 \u0627\u0644\u0645\u0647\u0645\u0629", en: "Task postponed" },
+  toastCommentAdded: { ar: "\u0623\u064F\u0636\u064A\u0641 \u0627\u0644\u062A\u0639\u0644\u064A\u0642", en: "Comment added" },
+  toastReadingSaved: { ar: "\u062A\u0645 \u062D\u0641\u0638 \u0627\u0644\u0642\u0631\u0627\u0621\u0629", en: "Reading saved" },
+  toastReportSaved: { ar: "\u062A\u0645 \u062D\u0641\u0638 \u0627\u0644\u062A\u0642\u0631\u064A\u0631", en: "Report saved" },
+  toastProblemSubmitted: { ar: "\u062A\u0645 \u0625\u0631\u0633\u0627\u0644 \u0627\u0644\u0628\u0644\u0627\u063A", en: "Report submitted" },
+  toastProblemUpdated: { ar: "\u062A\u0645 \u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0628\u0644\u0627\u063A", en: "Report updated" },
+  toastApproved: { ar: "\u062A\u0645 \u0627\u0644\u0627\u0639\u062A\u0645\u0627\u062F", en: "Approved" },
+  toastRerouted: { ar: "\u062A\u0645\u062A \u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u062A\u0648\u062C\u064A\u0647", en: "Rerouted" },
+  toastResubmitted: { ar: "\u062A\u0645\u062A \u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0631\u0633\u0627\u0644", en: "Resubmitted" },
+  toastLogbookApproved: { ar: "\u062A\u0645 \u0627\u0639\u062A\u0645\u0627\u062F \u0633\u062C\u0644 \u0627\u0644\u0648\u0631\u062F\u064A\u0629", en: "Logbook approved" },
+  toastDraftSaved: { ar: "\u062D\u064F\u0641\u0638\u062A \u0627\u0644\u0645\u0633\u0648\u062F\u0629", en: "Draft saved" },
   reportedBy: { ar: "\u0627\u0644\u0645\u0628\u0644\u0651\u063A:", en: "Reported by:" },
   respPerson: { ar: "\u0627\u0644\u0645\u0633\u0624\u0648\u0644:", en: "Responsible:" },
   accounts: { ar: "\u0627\u0644\u062D\u0633\u0627\u0628\u0627\u062A", en: "Accounts" },
@@ -298,34 +306,19 @@ var STR = {
   addRecommendation: { ar: "\u0623\u0636\u0641 \u062A\u0648\u0635\u064A\u0629 \u0628\u0627\u0633\u0645", en: "Add recommendation as" },
   noReportsHere: { ar: "\u0644\u0627 \u062A\u0648\u062C\u062F \u0628\u0644\u0627\u063A\u0627\u062A \u062D\u0631\u062C\u0629 \u062D\u0627\u0644\u064A\u064B\u0627", en: "No critical reports right now" }
 };
-var empNum = 4e3;
-function nextEmpId() {
-  return String(empNum++);
+
+// reviewEngine.js
+function isShiftTurn(status) {
+  return status === "submitted" || status === "returned_to_shift";
 }
-var NAME_POOL = ["Ahmed", "Khalid", "Fahad", "Saud", "Turki", "Bandar", "Majed", "Nawaf", "Abdulaziz", "Sultan", "Faisal", "Mishal", "Yousef", "Ibrahim", "Omar", "Ziad", "Waleed", "Nasser", "Saleh", "Hamad", "Rashed", "Talal", "Badr", "Mansour", "Hazza", "Salem", "Naif", "Fawaz", "Rakan", "Meshal", "Sami", "Adel", "Anas", "Karim", "Hassan", "Yasser", "Osama", "Marwan", "Riyad", "Adnan", "Jaber", "Suhail", "Amer"];
-var pid = 1;
-var DEPARTMENTS_SEED = ["Outside", "Turbine", "Utilities", "Control Panel"];
-var seedPeople = [];
-function addSeed(name, dept, role, admin) {
-  seedPeople.push({ id: pid++, name, employeeId: nextEmpId(), department: dept, role, isAdmin: !!admin, onLeave: false, shift: pid % 2 === 0 ? "night" : "day" });
+function isSectionTurn(status) {
+  return status === "approved_by_shift";
 }
-addSeed("Abdullah", "Control Panel", "App Admin", true);
-var ni = 0;
-var nm = () => NAME_POOL[ni++ % NAME_POOL.length];
-DEPARTMENTS_SEED.forEach((d) => {
-  for (let i = 0; i < 6; i++) addSeed(nm(), d, DEPT_OPERATOR_ROLE[d]);
-});
-DEPARTMENTS_SEED.forEach((d) => addSeed(nm(), d, "Section Supervisor"));
-DEPARTMENTS_SEED.forEach((d) => addSeed(nm(), d, "Unit Supervisor"));
-DEPARTMENTS_SEED.forEach((d) => {
-  for (let i = 0; i < 2; i++) addSeed(nm(), d, "Shift Supervisor");
-});
-addSeed(nm(), "Control Panel", "Coordinator");
-addSeed(nm(), "Outside", "Coordinator");
-seedPeople[3].onLeave = true;
-seedPeople[10].onLeave = true;
-seedPeople[17].onLeave = true;
-var nextPersonId = pid;
+function sectionCanSee(status) {
+  return status === "approved_by_shift" || status === "approved_final";
+}
+
+// dateHelpers.js
 function nowStamp(lang) {
   return (/* @__PURE__ */ new Date()).toLocaleString(lang === "en" ? "en-GB" : "ar", { calendar: "gregory", dateStyle: "medium", timeStyle: "short" });
 }
@@ -373,6 +366,36 @@ var tomorrow = toISODate(addDays(/* @__PURE__ */ new Date(), 1));
 var in2days = toISODate(addDays(/* @__PURE__ */ new Date(), 2));
 var in3days = toISODate(addDays(/* @__PURE__ */ new Date(), 3));
 var nowTs = Date.now();
+
+// seedData.js
+var empNum = 4e3;
+function nextEmpId() {
+  return String(empNum++);
+}
+var NAME_POOL = ["Ahmed", "Khalid", "Fahad", "Saud", "Turki", "Bandar", "Majed", "Nawaf", "Abdulaziz", "Sultan", "Faisal", "Mishal", "Yousef", "Ibrahim", "Omar", "Ziad", "Waleed", "Nasser", "Saleh", "Hamad", "Rashed", "Talal", "Badr", "Mansour", "Hazza", "Salem", "Naif", "Fawaz", "Rakan", "Meshal", "Sami", "Adel", "Anas", "Karim", "Hassan", "Yasser", "Osama", "Marwan", "Riyad", "Adnan", "Jaber", "Suhail", "Amer"];
+var pid = 1;
+var DEPARTMENTS_SEED = ["Outside", "Turbine", "Utilities", "Control Panel"];
+var seedPeople = [];
+function addSeed(name, dept, role, admin) {
+  seedPeople.push({ id: pid++, name, employeeId: nextEmpId(), department: dept, role, isAdmin: !!admin, onLeave: false, shift: pid % 2 === 0 ? "night" : "day" });
+}
+addSeed("Abdullah", "Control Panel", "App Admin", true);
+var ni = 0;
+var nm = () => NAME_POOL[ni++ % NAME_POOL.length];
+DEPARTMENTS_SEED.forEach((d) => {
+  for (let i = 0; i < 6; i++) addSeed(nm(), d, DEPT_OPERATOR_ROLE[d]);
+});
+DEPARTMENTS_SEED.forEach((d) => addSeed(nm(), d, "Section Supervisor"));
+DEPARTMENTS_SEED.forEach((d) => addSeed(nm(), d, "Unit Supervisor"));
+DEPARTMENTS_SEED.forEach((d) => {
+  for (let i = 0; i < 2; i++) addSeed(nm(), d, "Shift Supervisor");
+});
+addSeed(nm(), "Control Panel", "Coordinator");
+addSeed(nm(), "Outside", "Coordinator");
+seedPeople[3].onLeave = true;
+seedPeople[10].onLeave = true;
+seedPeople[17].onLeave = true;
+var nextPersonId = pid;
 function opOf(dept, idx) {
   return seedPeople.filter((p) => p.department === dept && p.role === DEPT_OPERATOR_ROLE[dept])[idx];
 }
@@ -641,6 +664,33 @@ var nextCommentId = 2;
 var nextProblemId = 5;
 var nextReadingId = 1;
 var nextReadingNoteId = 1;
+function getNextLogId() {
+  return nextLogIdCounter++;
+}
+function getNextTaskId() {
+  return nextId++;
+}
+function getNextCommentId() {
+  return nextCommentId++;
+}
+function getNextProblemId() {
+  return nextProblemId++;
+}
+function getNextReadingId() {
+  return nextReadingId++;
+}
+function getNextReadingNoteId() {
+  return nextReadingNoteId++;
+}
+function getNextPersonId() {
+  return nextPersonId++;
+}
+function getNextEmpId() {
+  return nextEmpId();
+}
+
+// App.jsx
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 function TaskManager() {
   const [lang, setLang] = useState("en");
   const t = (k) => STR[k] ? STR[k][lang] : k;
@@ -680,6 +730,10 @@ function TaskManager() {
   const [commentDraft, setCommentDraft] = useState("");
   const [problemCommentDraft, setProblemCommentDraft] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerMounted, setDrawerMounted] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [toasts, setToasts] = useState([]);
+  const [busyAction, setBusyAction] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
   const [dismissedAlerts, setDismissedAlerts] = useState([]);
   const [extendingAlertId, setExtendingAlertId] = useState(null);
@@ -743,7 +797,7 @@ function TaskManager() {
     return map[dept] || PALETTE;
   }
   function deptIcon(dept) {
-    return DEPT_ICONS[dept] || Users;
+    return DEPT_ICONS[dept] || Users2;
   }
   function shiftSupervisorOf(dept) {
     return people.find((p) => p.department === dept && p.role === "Shift Supervisor");
@@ -775,6 +829,33 @@ function TaskManager() {
     if (!departments.includes(newPerson.department)) setNewPerson((p) => ({ ...p, department: departments[0] || "" }));
     if (!roles.includes(newPerson.role)) setNewPerson((p) => ({ ...p, role: roles[0] || "" }));
   }, [departments, roles]);
+  useEffect(() => {
+    let closeTimer;
+    if (drawerOpen) {
+      setDrawerMounted(true);
+      const raf1 = requestAnimationFrame(() => {
+        const raf2 = requestAnimationFrame(() => setDrawerVisible(true));
+        return () => cancelAnimationFrame(raf2);
+      });
+      return () => cancelAnimationFrame(raf1);
+    } else if (drawerMounted) {
+      setDrawerVisible(false);
+      closeTimer = setTimeout(() => setDrawerMounted(false), 260);
+    }
+    return () => clearTimeout(closeTimer);
+  }, [drawerOpen]);
+  function showToast(text, kind = "success") {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, text, kind }]);
+    setTimeout(() => setToasts((prev) => prev.filter((tt) => tt.id !== id)), 3200);
+  }
+  function runWithBusy(actionKey, fn, delay = 380) {
+    setBusyAction(actionKey);
+    setTimeout(() => {
+      fn();
+      setBusyAction(null);
+    }, delay);
+  }
   function defaultAssignees(dept) {
     return departmentOperators(dept).filter((p) => !p.onLeave).map((p) => p.id);
   }
@@ -955,7 +1036,7 @@ function TaskManager() {
       const occDates = computeRecurrenceDates(taskForm.recurrence, baseDate);
       const groupId = "rec-" + Date.now();
       const newOnes = occDates.map((ds) => ({
-        id: nextId++,
+        id: getNextTaskId(),
         ...taskForm,
         dates: [ds],
         startDate: ds,
@@ -970,7 +1051,7 @@ function TaskManager() {
       }));
       setTasks((prev) => [...newOnes, ...prev]);
     } else {
-      setTasks((prev) => [{ id: nextId++, ...taskForm, privateTo: taskForm.type === "private" ? taskForm.privateTo : null, createdBy: currentUserId, createdAt: nowStamp(lang), status: "not_started", completedAt: null, comments: [] }, ...prev]);
+      setTasks((prev) => [{ id: getNextTaskId(), ...taskForm, privateTo: taskForm.type === "private" ? taskForm.privateTo : null, createdBy: currentUserId, createdAt: nowStamp(lang), status: "not_started", completedAt: null, comments: [] }, ...prev]);
     }
     setTaskForm(emptyTaskForm());
     setEditingId(null);
@@ -989,26 +1070,30 @@ function TaskManager() {
   function deleteTask(id) {
     if (!window.confirm(t("confirmDeleteMsg"))) return;
     setTasks((prev) => prev.filter((tk) => tk.id !== id));
+    showToast(t("toastTaskDeleted"), "info");
   }
   function setStatus(id, status) {
     setTasks((prev) => prev.map((tk) => {
       if (tk.id !== id) return tk;
-      if (status === "completed" && tk.status !== "completed") setActivityLog((log) => [{ id: nextLogIdCounter++, taskTitle: tk.title, by: actingAs, at: nowStamp(lang), dateISO: today, ts: Date.now() }, ...log]);
+      if (status === "completed" && tk.status !== "completed") setActivityLog((log) => [{ id: getNextLogId(), taskTitle: tk.title, by: actingAs, at: nowStamp(lang), dateISO: today, ts: Date.now() }, ...log]);
       return { ...tk, status, completedAt: status === "completed" ? today : null };
     }));
+    if (status === "completed") showToast(t("toastTaskCompleted"), "success");
   }
   function addComment(taskId) {
     if (!commentDraft.trim()) return;
-    setTasks((prev) => prev.map((tk) => tk.id === taskId ? { ...tk, comments: [...tk.comments, { id: nextCommentId++, author: actingAs, text: commentDraft, at: nowStamp(lang) }] } : tk));
+    setTasks((prev) => prev.map((tk) => tk.id === taskId ? { ...tk, comments: [...tk.comments, { id: getNextCommentId(), author: actingAs, text: commentDraft, at: nowStamp(lang) }] } : tk));
     setCommentDraft("");
+    showToast(t("toastCommentAdded"), "info");
   }
   function confirmExtend(taskId) {
     if (!extendComment.trim()) return;
-    setTasks((prev) => prev.map((tk) => tk.id !== taskId ? tk : { ...tk, endDate: extendDate || tk.endDate, status: tk.status === "not_started" ? "in_progress" : tk.status, comments: [...tk.comments, { id: nextCommentId++, author: actingAs, text: `Postponed: ${extendComment}`, at: nowStamp(lang) }] }));
+    setTasks((prev) => prev.map((tk) => tk.id !== taskId ? tk : { ...tk, endDate: extendDate || tk.endDate, status: tk.status === "not_started" ? "in_progress" : tk.status, comments: [...tk.comments, { id: getNextCommentId(), author: actingAs, text: `Postponed: ${extendComment}`, at: nowStamp(lang) }] }));
     setDismissedAlerts((d) => [...d, taskId]);
     setExtendingAlertId(null);
     setExtendDate("");
     setExtendComment("");
+    showToast(t("toastTaskPostponed"), "info");
   }
   function toggleCategory(cat) {
     setProblemForm((f) => ({ ...f, categories: f.categories.includes(cat) ? f.categories.filter((c) => c !== cat) : [...f.categories, cat] }));
@@ -1023,7 +1108,7 @@ function TaskManager() {
   }
   function addNoteDraft() {
     if (!noteDraft.description.trim() && !noteDraft.equipmentName.trim()) return;
-    setReadingNotesDraft((prev) => [...prev, { id: nextReadingNoteId++, ...noteDraft }]);
+    setReadingNotesDraft((prev) => [...prev, { id: getNextReadingNoteId(), ...noteDraft }]);
     setNoteDraft({ unitName: "", equipmentName: "", tagNumber: "", description: "", severity: "note" });
     setShowNoteForm(false);
   }
@@ -1032,9 +1117,10 @@ function TaskManager() {
   }
   function saveReading() {
     if (!readingAttachment && readingNotesDraft.length === 0) return;
-    setReadingsLog((prev) => [{ id: nextReadingId++, department: viewer.department, enteredBy: currentUserId, createdAt: nowStamp(lang), dateISO: today, ts: Date.now(), attachment: readingAttachment, notes: readingNotesDraft, reviewStatus: canManage ? "approved_by_shift" : "submitted", comments: [] }, ...prev]);
+    setReadingsLog((prev) => [{ id: getNextReadingId(), department: viewer.department, enteredBy: currentUserId, createdAt: nowStamp(lang), dateISO: today, ts: Date.now(), attachment: readingAttachment, notes: readingNotesDraft, reviewStatus: canManage ? "approved_by_shift" : "submitted", comments: [] }, ...prev]);
     setReadingAttachment(null);
     setReadingNotesDraft([]);
+    showToast(t("toastReadingSaved"), "success");
   }
   function shiftISODate(iso, n) {
     return toISODate(addDays(/* @__PURE__ */ new Date(iso + "T00:00:00"), n));
@@ -1057,8 +1143,9 @@ function TaskManager() {
   function saveReport(reportKind, period) {
     if (!reportAttachment) return;
     const periodKey = period === "weekly" ? weekKeyOf(today) : period === "monthly" ? monthKeyOf(today) : null;
-    setReportsLog((prev) => [{ id: nextReadingId++, department: viewer.department, reportKind, period, periodKey, enteredBy: currentUserId, createdAt: nowStamp(lang), dateISO: today, ts: Date.now(), attachment: reportAttachment, reviewStatus: canManage ? "approved_by_shift" : "submitted", comments: [] }, ...prev]);
+    setReportsLog((prev) => [{ id: getNextReadingId(), department: viewer.department, reportKind, period, periodKey, enteredBy: currentUserId, createdAt: nowStamp(lang), dateISO: today, ts: Date.now(), attachment: reportAttachment, reviewStatus: canManage ? "approved_by_shift" : "submitted", comments: [] }, ...prev]);
     setReportAttachment(null);
+    showToast(t("toastReportSaved"), "success");
   }
   function submitProblem(e) {
     e.preventDefault();
@@ -1066,10 +1153,11 @@ function TaskManager() {
     const tagNumber = [problemForm.tag1, problemForm.tag2, problemForm.tag3].filter(Boolean).join("-");
     if (editingProblemId) {
       setProblems((prev) => prev.map((p) => p.id === editingProblemId ? { ...p, ...problemForm, tagNumber, editedNote: "Edited", editedAt: nowStamp(lang) } : p));
+      showToast(t("toastProblemUpdated"), "success");
     } else {
       const selfCreated = canManage;
       setProblems((prev) => [{
-        id: nextProblemId++,
+        id: getNextProblemId(),
         title: problemForm.title,
         location: problemForm.location,
         categories: problemForm.categories,
@@ -1089,6 +1177,7 @@ function TaskManager() {
         editedAt: "",
         comments: []
       }, ...prev]);
+      showToast(t("toastProblemSubmitted"), "success");
     }
     setProblemForm(emptyProblemForm());
     setShowProblemForm(false);
@@ -1121,6 +1210,8 @@ function TaskManager() {
       }
       return { ...item, reviewStatus: status, comments };
     }));
+    const toastMap = { approve: ["toastApproved", "success"], reroute: ["toastRerouted", "info"], comment: ["toastCommentAdded", "info"], resubmit: ["toastResubmitted", "info"] };
+    if (toastMap[action]) showToast(t(toastMap[action][0]), toastMap[action][1]);
   }
   function reviewProblem(id, action, text) {
     applyReviewAction(setProblems, id, action, text);
@@ -1137,8 +1228,8 @@ function TaskManager() {
   function addPerson(e) {
     e.preventDefault();
     if (!newPerson.name.trim()) return;
-    const id = nextPersonId++;
-    setPeople((prev) => [...prev, { id, employeeId: nextEmpId(), onLeave: false, ...newPerson }]);
+    const id = getNextPersonId();
+    setPeople((prev) => [...prev, { id, employeeId: getNextEmpId(), onLeave: false, ...newPerson }]);
     setNewPerson({ name: "", department: departments[0] || "", role: roles[0] || "", isAdmin: false });
   }
   function removePerson(id) {
@@ -1284,7 +1375,7 @@ function TaskManager() {
     return /* @__PURE__ */ jsx("div", { className: "flex flex-col gap-2 mb-4", children: alerts.map((tk) => /* @__PURE__ */ jsxs("div", { className: "rounded-xl p-3.5 flex flex-col gap-2", style: { background: "#FFF6EB", border: "1px solid #F0C57A" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3 flex-wrap", children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsx(AlertTriangle, { size: 16, color: "#B25E09" }),
+          /* @__PURE__ */ jsx(AlertTriangle2, { size: 16, color: "#B25E09" }),
           /* @__PURE__ */ jsxs("span", { className: "text-sm", style: { color: "#5B4321" }, children: [
             t("dueSoon"),
             " ",
@@ -1387,7 +1478,7 @@ function TaskManager() {
           setTaskCalOpen((o) => !o);
           setTaskRecOpen(false);
         }, className: "flex items-center gap-1.5 text-sm font-bold px-3 py-2 rounded-lg", style: { background: taskCalOpen ? "#1F4E79" : "#F4F6F8", color: taskCalOpen ? "white" : "#5B6B79" }, children: [
-          /* @__PURE__ */ jsx(CalendarDays, { size: 15 }),
+          /* @__PURE__ */ jsx(CalendarDays2, { size: 15 }),
           " ",
           taskForm.dates.length,
           " ",
@@ -1429,7 +1520,10 @@ function TaskManager() {
     ] });
   }
   function ProblemFormPanel() {
-    return /* @__PURE__ */ jsxs("form", { ref: formRef, onSubmit: submitProblem, className: "rounded-xl p-4 mb-4 flex flex-col gap-3", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: [
+    return /* @__PURE__ */ jsxs("form", { ref: formRef, onSubmit: (e) => {
+      e.preventDefault();
+      runWithBusy("submitProblem", () => submitProblem(e));
+    }, className: "rounded-xl p-4 mb-4 flex flex-col gap-3", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
         /* @__PURE__ */ jsx("h3", { className: "text-sm font-bold", style: { color: "#16222E" }, children: editingProblemId ? t("editReport") : t("newReport") }),
         /* @__PURE__ */ jsx("button", { type: "button", onClick: () => {
@@ -1479,7 +1573,7 @@ function TaskManager() {
         /* @__PURE__ */ jsx("div", { className: "flex gap-2", children: Object.entries(PRIORITY).map(([k, v]) => /* @__PURE__ */ jsx("button", { type: "button", onClick: () => setProblemForm({ ...problemForm, priority: k }), className: "flex-1 text-xs font-bold py-2 rounded-lg", style: { background: problemForm.priority === k ? v.color : "#F4F6F8", color: problemForm.priority === k ? "white" : "#5B6B79", border: "1px solid " + (problemForm.priority === k ? v.color : "#E2E8ED") }, children: v[lang] || v.ar }, k)) })
       ] }),
       !editingProblemId && /* @__PURE__ */ jsx("p", { className: "text-xs", style: labelStyle, children: canManage ? t("autoRouteSup") : t("autoRouteOp") }),
-      /* @__PURE__ */ jsx("button", { type: "submit", className: "text-sm font-bold py-2.5 rounded-lg", style: { background: "#16222E", color: "white" }, children: editingProblemId ? t("saveEdit") : t("sendReport") })
+      /* @__PURE__ */ jsx("button", { type: "submit", className: "text-sm font-bold py-2.5 rounded-lg", style: { background: "#16222E", color: "white" }, children: BtnContent("submitProblem", editingProblemId ? t("saveEdit") : t("sendReport")) })
     ] });
   }
   function DayModal() {
@@ -1518,7 +1612,7 @@ function TaskManager() {
       const q = calSearch.toLowerCase();
       return list.filter((tk) => tk.title.toLowerCase().includes(q));
     }
-    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", children: [
+    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", style: { animation: "fadeSlideUp 240ms ease-out" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-lg font-black", style: { color: "#16222E" }, children: t("calendar") }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
@@ -1586,7 +1680,7 @@ function TaskManager() {
   function LogOverlay() {
     const dateObj = new Date(selectedLogDate);
     const canGoNext = selectedLogDate < today;
-    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", children: [
+    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", style: { animation: "fadeSlideUp 240ms ease-out" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-lg font-black", style: { color: "#16222E" }, children: t("eventList") }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
@@ -1611,7 +1705,7 @@ function TaskManager() {
         /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-2", children: [
           dayLogEntries.length === 0 && /* @__PURE__ */ jsx("div", { className: "rounded-xl p-8 text-center text-sm", style: { background: "#FFFFFF", border: "1px dashed #DCE3E8", color: "#8A97A3" }, children: t("noLogEntries") }),
           dayLogEntries.map((e, i) => /* @__PURE__ */ jsxs("div", { className: "rounded-xl p-3.5 flex items-center gap-3", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: [
-            /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-full flex items-center justify-center shrink-0", style: { background: e.kind === "task" ? "#E4F3EA" : "#FBE7E4" }, children: e.kind === "task" ? /* @__PURE__ */ jsx(CheckCircle2, { size: 16, color: "#2F7D4F" }) : /* @__PURE__ */ jsx(AlertTriangle, { size: 16, color: "#C0392B" }) }),
+            /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-full flex items-center justify-center shrink-0", style: { background: e.kind === "task" ? "#E4F3EA" : "#FBE7E4" }, children: e.kind === "task" ? /* @__PURE__ */ jsx(CheckCircle2, { size: 16, color: "#2F7D4F" }) : /* @__PURE__ */ jsx(AlertTriangle2, { size: 16, color: "#C0392B" }) }),
             /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
               /* @__PURE__ */ jsx("p", { className: "text-sm font-bold", style: { color: "#16222E" }, children: e.title }),
               /* @__PURE__ */ jsxs("p", { className: "text-xs mt-0.5", style: { color: "#8A97A3" }, children: [
@@ -1634,7 +1728,7 @@ function TaskManager() {
             /* @__PURE__ */ jsx("div", { className: "flex-1", style: { borderTop: "1px solid #DCE3E8" } })
           ] }),
           /* @__PURE__ */ jsx("div", { className: "flex flex-col gap-2", children: g.items.map((e, i) => /* @__PURE__ */ jsxs("div", { className: "rounded-xl p-3.5 flex items-center gap-3", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: [
-            /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-full flex items-center justify-center shrink-0", style: { background: e.kind === "task" ? "#E4F3EA" : "#FBE7E4" }, children: e.kind === "task" ? /* @__PURE__ */ jsx(CheckCircle2, { size: 16, color: "#2F7D4F" }) : /* @__PURE__ */ jsx(AlertTriangle, { size: 16, color: "#C0392B" }) }),
+            /* @__PURE__ */ jsx("div", { className: "w-8 h-8 rounded-full flex items-center justify-center shrink-0", style: { background: e.kind === "task" ? "#E4F3EA" : "#FBE7E4" }, children: e.kind === "task" ? /* @__PURE__ */ jsx(CheckCircle2, { size: 16, color: "#2F7D4F" }) : /* @__PURE__ */ jsx(AlertTriangle2, { size: 16, color: "#C0392B" }) }),
             /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
               /* @__PURE__ */ jsx("p", { className: "text-sm font-bold", style: { color: "#16222E" }, children: e.title }),
               /* @__PURE__ */ jsxs("p", { className: "text-xs mt-0.5", style: { color: "#8A97A3" }, children: [
@@ -1652,7 +1746,7 @@ function TaskManager() {
     const allStaff = people.filter((p) => !p.isAdmin);
     const filtered = staffTab === "all" ? allStaff : staffTab === "present" ? allStaff.filter((p) => !p.onLeave) : allStaff.filter((p) => p.onLeave);
     const shiftFiltered = staffTab === "present" ? filtered.filter((p) => (p.shift || "day") === presentShiftTab) : filtered;
-    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", children: [
+    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", style: { animation: "fadeSlideUp 240ms ease-out" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-lg font-black", style: { color: "#16222E" }, children: t("staff") }),
         /* @__PURE__ */ jsx("button", { onClick: () => setActiveOverlay(null), className: "w-9 h-9 rounded-lg flex items-center justify-center", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: /* @__PURE__ */ jsx(X, { size: 16, color: "#16222E" }) })
@@ -1708,7 +1802,7 @@ function TaskManager() {
     ] });
   }
   function exportLogbook(kind) {
-    window.alert(lang === "ar" ? `\u0633\u064A\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 \u0633\u062C\u0644 \u0627\u0644\u0648\u0631\u062F\u064A\u0629 \u0628\u0635\u064A\u063A\u0629 ${kind === "pdf" ? "PDF" : "Word"} \u2014 \u0647\u0630\u0647 \u0627\u0644\u0645\u064A\u0632\u0629 \u0633\u062A\u064F\u0641\u0639\u0651\u0644 \u0639\u0646\u062F \u0631\u0628\u0637 \u0627\u0644\u062E\u0627\u062F\u0645.` : `Logbook will export as ${kind === "pdf" ? "PDF" : "Word"} \u2014 this will be enabled once the backend is connected.`);
+    showToast(lang === "ar" ? `\u0633\u064A\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 \u0633\u062C\u0644 \u0627\u0644\u0648\u0631\u062F\u064A\u0629 \u0628\u0635\u064A\u063A\u0629 ${kind === "pdf" ? "PDF" : "Word"} \u2014 \u0647\u0630\u0647 \u0627\u0644\u0645\u064A\u0632\u0629 \u0633\u062A\u064F\u0641\u0639\u0651\u0644 \u0639\u0646\u062F \u0631\u0628\u0637 \u0627\u0644\u062E\u0627\u062F\u0645.` : `Logbook will export as ${kind === "pdf" ? "PDF" : "Word"} \u2014 this will be enabled once the backend is connected.`, "info");
   }
   function logbookKey(dept) {
     return (dept || viewer.department) + "_" + today;
@@ -1716,10 +1810,12 @@ function TaskManager() {
   function approveLogbook(dept) {
     const key = logbookKey(dept);
     setLogbookNotes((prev) => ({ ...prev, [key]: { summary: (logbookSummaryDraft[key] ?? prev[key]?.summary) || "", reviewStatus: "approved", approvedBy: actingAs, approvedAt: nowStamp(lang) } }));
+    showToast(t("toastLogbookApproved"), "success");
   }
   function saveLogbookDraft(dept) {
     const key = logbookKey(dept);
     setLogbookNotes((prev) => ({ ...prev, [key]: { ...prev[key] || {}, summary: (logbookSummaryDraft[key] ?? prev[key]?.summary) || "", reviewStatus: "draft" } }));
+    showToast(t("toastDraftSaved"), "info");
   }
   function LogbookOverlay() {
     function deptContent(dept) {
@@ -1759,7 +1855,7 @@ function TaskManager() {
         /* @__PURE__ */ jsx("textarea", { value: draftVal, onChange: (e) => setLogbookSummaryDraft((prev) => ({ ...prev, [key]: e.target.value })), placeholder: t("logbookSummaryPH"), rows: 3, className: "w-full text-sm outline-none resize-none", style: inputStyle }),
         /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
           /* @__PURE__ */ jsx("button", { onClick: () => saveLogbookDraft(dept), className: "flex-1 text-xs font-bold py-2 rounded-lg", style: { background: "#F4F6F8", border: "1px solid #DCE3E8", color: "#16222E" }, children: t("saveDraftBtn") }),
-          /* @__PURE__ */ jsx("button", { onClick: () => approveLogbook(dept), className: "flex-1 text-xs font-bold py-2 rounded-lg", style: { background: "#2F7D4F", color: "white" }, children: t("approveLogbookBtn") })
+          /* @__PURE__ */ jsx("button", { onClick: () => runWithBusy("approveLogbook_" + dept, () => approveLogbook(dept)), className: "flex-1 text-xs font-bold py-2 rounded-lg", style: { background: "#2F7D4F", color: "white" }, children: BtnContent("approveLogbook_" + dept, t("approveLogbookBtn")) })
         ] }),
         isApproved && /* @__PURE__ */ jsxs("p", { className: "text-[11px]", style: { color: "#8A97A3" }, children: [
           t("logbookApprovedBy"),
@@ -1772,7 +1868,7 @@ function TaskManager() {
     }
     const ownEntry = logbookNotes[logbookKey(viewer.department)];
     const ownApproved = ownEntry && ownEntry.reviewStatus === "approved";
-    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", children: [
+    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", style: { animation: "fadeSlideUp 240ms ease-out" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-lg font-black", style: { color: "#16222E" }, children: t("logbook") }),
         /* @__PURE__ */ jsx("button", { onClick: () => setActiveOverlay(null), className: "w-9 h-9 rounded-lg flex items-center justify-center", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: /* @__PURE__ */ jsx(X, { size: 16, color: "#16222E" }) })
@@ -1817,7 +1913,7 @@ function TaskManager() {
   function ReadingsOverlay() {
     const deptReadings = readingsVisibleToViewer.filter((r) => r.dateISO === readingsViewDate);
     const canSubmitReading = viewerRole === "operator" || canManage;
-    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", children: [
+    return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", style: { animation: "fadeSlideUp 240ms ease-out" }, children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-lg font-black", style: { color: "#16222E" }, children: t("readings") }),
         /* @__PURE__ */ jsx("button", { onClick: () => setActiveOverlay(null), className: "w-9 h-9 rounded-lg flex items-center justify-center", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: /* @__PURE__ */ jsx(X, { size: 16, color: "#16222E" }) })
@@ -1832,13 +1928,13 @@ function TaskManager() {
             /* @__PURE__ */ jsx("input", { type: "file", accept: "image/*,.pdf", className: "hidden", onChange: handleReadingFile })
           ] }),
           /* @__PURE__ */ jsxs("label", { className: "flex-1 flex items-center justify-center gap-1.5 text-sm font-bold py-3 rounded-lg cursor-pointer", style: { background: "#F4F6F8", color: "#16222E", border: "1px dashed #DCE3E8" }, children: [
-            /* @__PURE__ */ jsx(Activity, { size: 16 }),
+            /* @__PURE__ */ jsx(Activity2, { size: 16 }),
             " ",
             t("takePhoto"),
             /* @__PURE__ */ jsx("input", { type: "file", accept: "image/*", capture: "environment", className: "hidden", onChange: handleReadingFile })
           ] })
         ] }) : /* @__PURE__ */ jsxs("div", { className: "rounded-lg p-2.5 flex items-center gap-3", style: { background: "#F4F6F8" }, children: [
-          readingAttachment.isImage ? /* @__PURE__ */ jsx("img", { src: readingAttachment.dataUrl, alt: "", className: "w-14 h-14 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-14 h-14 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText, { size: 22, color: "#1F4E79" }) }),
+          readingAttachment.isImage ? /* @__PURE__ */ jsx("img", { src: readingAttachment.dataUrl, alt: "", className: "w-14 h-14 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-14 h-14 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText2, { size: 22, color: "#1F4E79" }) }),
           /* @__PURE__ */ jsx("p", { className: "flex-1 text-xs font-bold truncate", style: { color: "#16222E" }, children: readingAttachment.name }),
           /* @__PURE__ */ jsx("button", { onClick: () => setReadingAttachment(null), className: "text-xs font-bold px-2.5 py-1.5 rounded-lg shrink-0", style: { background: "#FBE7E4", color: "#C0392B" }, children: t("removeFile") })
         ] }),
@@ -1882,7 +1978,7 @@ function TaskManager() {
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsx("button", { onClick: saveReading, disabled: !readingAttachment && readingNotesDraft.length === 0, className: "text-sm font-bold py-2.5 rounded-lg", style: { background: "#1F4E79", color: "white", opacity: !readingAttachment && readingNotesDraft.length === 0 ? 0.5 : 1 }, children: t("saveReadingBtn") })
+        /* @__PURE__ */ jsx("button", { onClick: () => runWithBusy("saveReading", saveReading), disabled: !readingAttachment && readingNotesDraft.length === 0, className: "text-sm font-bold py-2.5 rounded-lg", style: { background: "#1F4E79", color: "white", opacity: !readingAttachment && readingNotesDraft.length === 0 ? 0.5 : 1 }, children: BtnContent("saveReading", t("saveReadingBtn")) })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between rounded-xl p-2.5", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: [
         /* @__PURE__ */ jsx("button", { onClick: () => setReadingsViewDate((d) => shiftISODate(d, -1)), className: "w-9 h-9 rounded-lg flex items-center justify-center", style: { background: "#F4F6F8" }, children: /* @__PURE__ */ jsx(ChevronUp, { size: 16, style: { transform: "rotate(-90deg)" }, color: "#16222E" }) }),
@@ -1902,7 +1998,7 @@ function TaskManager() {
               r.createdAt
             ] }),
             r.attachment && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 mb-2", children: [
-              r.attachment.isImage ? /* @__PURE__ */ jsx("img", { src: r.attachment.dataUrl, alt: "", className: "w-12 h-12 rounded-lg object-cover" }) : /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-lg flex items-center justify-center", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText, { size: 18, color: "#1F4E79" }) }),
+              r.attachment.isImage ? /* @__PURE__ */ jsx("img", { src: r.attachment.dataUrl, alt: "", className: "w-12 h-12 rounded-lg object-cover" }) : /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-lg flex items-center justify-center", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText2, { size: 18, color: "#1F4E79" }) }),
               /* @__PURE__ */ jsx("span", { className: "text-xs", style: { color: "#5B6B79" }, children: r.attachment.name })
             ] }),
             r.notes.length > 0 && /* @__PURE__ */ jsx("div", { className: "flex flex-col gap-1.5", children: r.notes.map((n) => /* @__PURE__ */ jsxs("div", { className: "rounded-lg px-2.5 py-1.5 flex items-center gap-1.5 flex-wrap", style: { background: SEVERITY[n.severity].bg }, children: [
@@ -1926,18 +2022,18 @@ function TaskManager() {
     const isCurrentPeriod = periodicPeriod === "weekly" ? periodicWeekKey === weekKeyOf(today) : periodicMonthKey === monthKeyOf(today);
     function UploadCard(onSaveKind, canSubmit, restrictionNote) {
       if (!canSubmit) return /* @__PURE__ */ jsx("p", { className: "text-xs italic px-1", style: { color: "#8A97A3" }, children: restrictionNote });
-      return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", children: [
+      return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", style: { animation: "fadeSlideUp 240ms ease-out" }, children: [
         !reportAttachment ? /* @__PURE__ */ jsxs("label", { className: "flex items-center justify-center gap-1.5 text-sm font-bold py-3 rounded-lg cursor-pointer", style: { background: "#F4F6F8", color: "#16222E", border: "1px dashed #DCE3E8" }, children: [
           /* @__PURE__ */ jsx(Download, { size: 16, style: { transform: "rotate(180deg)" } }),
           " ",
           t("attachReportFile"),
           /* @__PURE__ */ jsx("input", { type: "file", accept: "image/*,.pdf", className: "hidden", onChange: handleReportFile })
         ] }) : /* @__PURE__ */ jsxs("div", { className: "rounded-lg p-2.5 flex items-center gap-3", style: { background: "#F4F6F8" }, children: [
-          reportAttachment.isImage ? /* @__PURE__ */ jsx("img", { src: reportAttachment.dataUrl, alt: "", className: "w-14 h-14 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-14 h-14 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText, { size: 22, color: "#1F4E79" }) }),
+          reportAttachment.isImage ? /* @__PURE__ */ jsx("img", { src: reportAttachment.dataUrl, alt: "", className: "w-14 h-14 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-14 h-14 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText2, { size: 22, color: "#1F4E79" }) }),
           /* @__PURE__ */ jsx("p", { className: "flex-1 text-xs font-bold truncate", style: { color: "#16222E" }, children: reportAttachment.name }),
           /* @__PURE__ */ jsx("button", { onClick: () => setReportAttachment(null), className: "text-xs font-bold px-2.5 py-1.5 rounded-lg shrink-0", style: { background: "#FBE7E4", color: "#C0392B" }, children: t("removeFile") })
         ] }),
-        /* @__PURE__ */ jsx("button", { onClick: onSaveKind, disabled: !reportAttachment, className: "text-sm font-bold py-2.5 rounded-lg", style: { background: "#1F4E79", color: "white", opacity: !reportAttachment ? 0.5 : 1 }, children: t("saveReadingBtn") })
+        /* @__PURE__ */ jsx("button", { onClick: () => runWithBusy("saveReport", onSaveKind), disabled: !reportAttachment, className: "text-sm font-bold py-2.5 rounded-lg", style: { background: "#1F4E79", color: "white", opacity: !reportAttachment ? 0.5 : 1 }, children: BtnContent("saveReport", t("saveReadingBtn")) })
       ] });
     }
     return /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-3", children: [
@@ -1955,7 +2051,7 @@ function TaskManager() {
           UploadCard(() => saveReport("production", "daily"), canSubmitProduction, t("panelOperatorOnlyNote"))
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "rounded-xl p-3.5 flex items-center gap-3", style: { background: "#F4F6F8", border: "1px dashed #DCE3E8" }, children: [
-          /* @__PURE__ */ jsx(FileText, { size: 20, color: "#8A97A3" }),
+          /* @__PURE__ */ jsx(FileText2, { size: 20, color: "#8A97A3" }),
           /* @__PURE__ */ jsxs("div", { children: [
             /* @__PURE__ */ jsx("p", { className: "text-sm font-bold", style: { color: "#16222E" }, children: t("labReportTitle") }),
             /* @__PURE__ */ jsx("p", { className: "text-[11px]", style: { color: "#8A97A3" }, children: t("labReportSoon") }),
@@ -1973,7 +2069,7 @@ function TaskManager() {
             dayReports.length === 0 && /* @__PURE__ */ jsx("div", { className: "rounded-xl p-8 text-center text-sm", style: { background: "#FFFFFF", border: "1px dashed #DCE3E8", color: "#8A97A3" }, children: t("noReportsYet") }),
             dayReports.map((r) => /* @__PURE__ */ jsxs("div", { className: "rounded-xl p-3.5", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: [
               /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
-                r.attachment.isImage ? /* @__PURE__ */ jsx("img", { src: r.attachment.dataUrl, alt: "", className: "w-12 h-12 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText, { size: 18, color: "#1F4E79" }) }),
+                r.attachment.isImage ? /* @__PURE__ */ jsx("img", { src: r.attachment.dataUrl, alt: "", className: "w-12 h-12 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText2, { size: 18, color: "#1F4E79" }) }),
                 /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
                   /* @__PURE__ */ jsx("p", { className: "text-sm font-bold truncate", style: { color: "#16222E" }, children: r.attachment.name }),
                   /* @__PURE__ */ jsxs("p", { className: "text-[11px]", style: { color: "#8A97A3" }, children: [
@@ -2013,7 +2109,7 @@ function TaskManager() {
           periodicList.length === 0 && /* @__PURE__ */ jsx("div", { className: "rounded-xl p-8 text-center text-sm", style: { background: "#FFFFFF", border: "1px dashed #DCE3E8", color: "#8A97A3" }, children: t("noReportsYet") }),
           periodicList.map((r) => /* @__PURE__ */ jsxs("div", { className: "rounded-xl p-3.5", style: { background: "#FFFFFF", border: "1px solid #DCE3E8" }, children: [
             /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
-              r.attachment.isImage ? /* @__PURE__ */ jsx("img", { src: r.attachment.dataUrl, alt: "", className: "w-12 h-12 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText, { size: 18, color: "#1F4E79" }) }),
+              r.attachment.isImage ? /* @__PURE__ */ jsx("img", { src: r.attachment.dataUrl, alt: "", className: "w-12 h-12 rounded-lg object-cover shrink-0" }) : /* @__PURE__ */ jsx("div", { className: "w-12 h-12 rounded-lg flex items-center justify-center shrink-0", style: { background: "#E6EEF5" }, children: /* @__PURE__ */ jsx(FileText2, { size: 18, color: "#1F4E79" }) }),
               /* @__PURE__ */ jsxs("div", { className: "min-w-0", children: [
                 /* @__PURE__ */ jsx("p", { className: "text-sm font-bold truncate", style: { color: "#16222E" }, children: r.attachment.name }),
                 /* @__PURE__ */ jsxs("p", { className: "text-[11px]", style: { color: "#8A97A3" }, children: [
@@ -2031,8 +2127,22 @@ function TaskManager() {
       ] })
     ] });
   }
+  function BtnContent(key, label) {
+    if (busyAction !== key) return label;
+    return /* @__PURE__ */ jsxs("span", { className: "inline-flex items-center justify-center gap-2", children: [
+      /* @__PURE__ */ jsx("span", { style: { width: 14, height: 14, border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "white", borderRadius: "50%", display: "inline-block", animation: "ntmSpin 700ms linear infinite" } }),
+      label
+    ] });
+  }
+  function ToastStack() {
+    if (toasts.length === 0) return null;
+    return /* @__PURE__ */ jsx("div", { className: "fixed top-4 left-1/2 z-[70] flex flex-col gap-2 items-center", style: { transform: "translateX(-50%)", width: "min(92vw, 380px)" }, children: toasts.map((tt) => /* @__PURE__ */ jsxs("div", { className: "w-full flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg", style: { background: tt.kind === "success" ? "#1F4E3A" : tt.kind === "info" ? "#16222E" : "#7A2E22", color: "white", animation: "toastIn 240ms cubic-bezier(0.22, 1, 0.36, 1)" }, children: [
+      tt.kind === "success" ? /* @__PURE__ */ jsx(CheckCircle2, { size: 18, color: "#7EDCA8" }) : /* @__PURE__ */ jsx(MessageSquare, { size: 18, color: "#9FB4C7" }),
+      /* @__PURE__ */ jsx("p", { className: "text-sm font-bold flex-1", children: tt.text })
+    ] }, tt.id)) });
+  }
   function DrawerMenu() {
-    if (!drawerOpen) return null;
+    if (!drawerMounted) return null;
     const actionByKey = {
       tasks: () => {
         setActiveOverlay(null);
@@ -2051,16 +2161,16 @@ function TaskManager() {
     };
     const allowed = menuPermissions[viewer.role] || [];
     const items = MENU_ITEM_DEFS.filter((it) => allowed.includes(it.key));
-    return /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50", style: { background: "rgba(22,34,46,0.45)" }, onClick: () => setDrawerOpen(false), children: /* @__PURE__ */ jsxs("div", { className: "fixed top-0 w-80 h-full flex flex-col p-5 gap-1.5", style: { right: 0, background: "#FFFFFF", boxShadow: "-6px 0 24px rgba(0,0,0,0.12)" }, onClick: (e) => e.stopPropagation(), children: [
+    return /* @__PURE__ */ jsx("div", { className: "fixed inset-0 z-50", style: { background: "rgba(22,34,46,0.45)", opacity: drawerVisible ? 1 : 0, transition: "opacity 220ms ease" }, onClick: () => setDrawerOpen(false), children: /* @__PURE__ */ jsxs("div", { className: "fixed top-0 w-80 h-full flex flex-col p-5 gap-1.5", style: { right: 0, background: "#FFFFFF", boxShadow: "-6px 0 24px rgba(0,0,0,0.12)", transform: drawerVisible ? "translateX(0)" : "translateX(100%)", transition: "transform 260ms cubic-bezier(0.22, 1, 0.36, 1)" }, onClick: (e) => e.stopPropagation(), children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-4", children: [
         /* @__PURE__ */ jsx("h2", { className: "text-lg font-black", style: { color: "#16222E" }, children: t("menu") }),
         /* @__PURE__ */ jsx("button", { onClick: () => setDrawerOpen(false), className: "w-9 h-9 rounded-lg flex items-center justify-center", style: { background: "#F4F6F8" }, children: /* @__PURE__ */ jsx(X, { size: 19, color: "#5B6B79" }) })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex flex-col gap-1.5 overflow-y-auto", children: [
-        items.map((it) => /* @__PURE__ */ jsxs("button", { onClick: () => {
+        items.map((it, idx) => /* @__PURE__ */ jsxs("button", { onClick: () => {
           actionByKey[it.key]();
           setDrawerOpen(false);
-        }, className: "flex items-center gap-3.5 text-base font-bold px-4 py-4 rounded-xl transition-colors", style: { color: "#16222E", background: "#F8F9FA" }, children: [
+        }, className: "flex items-center gap-3.5 text-base font-bold px-4 py-4 rounded-xl transition-colors active:scale-[0.98]", style: { color: "#16222E", background: "#F8F9FA", opacity: drawerVisible ? 1 : 0, transform: drawerVisible ? "translateX(0)" : "translateX(12px)", transition: `opacity 220ms ease ${40 + idx * 30}ms, transform 220ms ease ${40 + idx * 30}ms` }, children: [
           /* @__PURE__ */ jsx(it.icon, { size: 21, color: "#1F4E79" }),
           " ",
           t(it.labelKey)
@@ -2091,10 +2201,10 @@ function TaskManager() {
         ] }),
         /* @__PURE__ */ jsx("p", { style: { color: "#5B6B79" }, children: c.text })
       ] }, c.id)) }),
-      canResubmit && /* @__PURE__ */ jsx("button", { onClick: () => {
+      canResubmit && /* @__PURE__ */ jsx("button", { onClick: () => runWithBusy("resubmit_" + item.id, () => {
         reviewFn(item.id, "resubmit");
         clearDraft();
-      }, className: "text-xs font-bold py-2 rounded-lg", style: { background: "#1F4E79", color: "white" }, children: t("resubmitBtn") }),
+      }), className: "text-xs font-bold py-2 rounded-lg", style: { background: "#1F4E79", color: "white" }, children: BtnContent("resubmit_" + item.id, t("resubmitBtn")) }),
       /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
         /* @__PURE__ */ jsx("input", { value: draft, onChange: (e) => setDraft(e.target.value), placeholder: myTurn ? t("rerouteNotePlaceholder") : t("addCommentBtn"), className: "flex-1 text-xs outline-none", style: { ...inputStyle, padding: "8px 10px" } }),
         /* @__PURE__ */ jsx("button", { onClick: () => {
@@ -2105,18 +2215,18 @@ function TaskManager() {
         }, className: "w-8 h-8 rounded-lg flex items-center justify-center shrink-0", style: { background: "#1F4E79" }, children: /* @__PURE__ */ jsx(Send, { size: 13, color: "white" }) })
       ] }),
       myTurn && /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
-        /* @__PURE__ */ jsxs("button", { onClick: () => {
+        /* @__PURE__ */ jsx("button", { onClick: () => runWithBusy("approve_" + item.id, () => {
           reviewFn(item.id, "approve");
           clearDraft();
-        }, className: "flex-1 flex items-center justify-center gap-1.5 text-xs font-bold py-2 rounded-lg", style: { background: "#2F7D4F", color: "white" }, children: [
+        }), className: "flex-1 flex items-center justify-center gap-1.5 text-xs font-bold py-2 rounded-lg", style: { background: "#2F7D4F", color: "white" }, children: busyAction === "approve_" + item.id ? BtnContent("approve_" + item.id, isShiftTurn(status) ? t("approve") : t("approveFinal")) : /* @__PURE__ */ jsxs(Fragment, { children: [
           /* @__PURE__ */ jsx(Check, { size: 14 }),
           " ",
           isShiftTurn(status) ? t("approve") : t("approveFinal")
-        ] }),
-        /* @__PURE__ */ jsx("button", { onClick: () => {
+        ] }) }),
+        /* @__PURE__ */ jsx("button", { onClick: () => runWithBusy("reroute_" + item.id, () => {
           reviewFn(item.id, "reroute", draft);
           clearDraft();
-        }, className: "flex-1 text-xs font-bold py-2 rounded-lg", style: { background: "#C0392B", color: "white" }, children: t("reroute") })
+        }), className: "flex-1 text-xs font-bold py-2 rounded-lg", style: { background: "#C0392B", color: "white" }, children: BtnContent("reroute_" + item.id, t("reroute")) })
       ] })
     ] });
   }
@@ -2303,7 +2413,14 @@ function TaskManager() {
     }) });
   }
   return /* @__PURE__ */ jsxs("div", { dir: lang === "en" ? "ltr" : "rtl", className: "min-h-screen w-full", style: { background: "#EEF1F4", fontFamily: lang === "en" ? "system-ui, sans-serif" : "'Tajawal', sans-serif" }, children: [
-    /* @__PURE__ */ jsx("style", { children: `@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap'); *{box-sizing:border-box;}` }),
+    /* @__PURE__ */ jsx("style", { children: `
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap');
+        *{box-sizing:border-box;}
+        @keyframes fadeSlideUp { from { opacity:0; transform: translateY(10px);} to {opacity:1; transform:translateY(0);} }
+        @keyframes ntmSpin { to { transform: rotate(360deg);} }
+        @keyframes toastIn { from {opacity:0; transform:translateY(-12px) scale(0.96);} to {opacity:1; transform:translateY(0) scale(1);} }
+      ` }),
+    ToastStack(),
     /* @__PURE__ */ jsxs("div", { className: "max-w-3xl mx-auto px-4 py-6", children: [
       /* @__PURE__ */ jsxs("div", { className: "rounded-xl p-2.5 mb-4 flex items-center gap-2", style: { background: "#FFF6EB", border: "1px solid #F0C57A" }, children: [
         /* @__PURE__ */ jsx("span", { className: "text-xs font-bold", style: { color: "#5B4321" }, children: t("previewAs") }),
